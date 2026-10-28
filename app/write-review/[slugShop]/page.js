@@ -3,12 +3,15 @@ import Review from "@/components/reviewShop/review";
 import Image from "next/image";
 import Form from "next/form";
 // import { useParams } from "next/navigation";
-import shops from "@/shops.json";
+import { getShops } from "@/lib/shops";
 import styles from "./slugshop.module.css";
 import { writeReview } from "../../actions/actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function SlugShopPage({ params }) {
   const { slugShop } = await params;
+  const shops = await getShops();
   const selectedShop = shops.find(
     (shop) => String(shop.id) === String(slugShop),
   );

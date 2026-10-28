@@ -1,13 +1,11 @@
 "use server";
 
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { getShops, saveShops } from "@/lib/shops";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 export async function addShop(formData) {
-  const filePath = path.join(process.cwd(), "shops.json");
-  const shops = JSON.parse(await readFile(filePath, "utf8"));
+  const shops = await getShops();
   const newShop = {
     id: Math.max(0, ...shops.map((shop) => Number(shop.id) || 0)) + 1,
     name: String(formData.get("shopName") || "").trim(),
@@ -16,14 +14,13 @@ export async function addShop(formData) {
     customers: [],
   };
   shops.push(newShop);
-  await writeFile(filePath, `${JSON.stringify(shops, null, 2)}\n`);
+  await saveShops(shops);
   revalidatePath("/");
   redirect("/");
 }
 
 export async function writeReview(formData) {
-  const filePath = path.join(process.cwd(), "shops.json");
-  const shops = JSON.parse(await readFile(filePath, "utf8"));
+  const shops = await getShops();
   const newReview = {
     customerID: Math.max(0, ...shops.map((shop) => Number(shop.id) || 0)) + 1,
     customerName: String(formData.get("username")),
@@ -36,7 +33,7 @@ export async function writeReview(formData) {
       shop.customers.push(newReview);
     }
   });
-  await writeFile(filePath, `${JSON.stringify(shops, null, 2)}\n`);
+  await saveShops(shops);
   revalidatePath("/");
   redirect("/");
 }

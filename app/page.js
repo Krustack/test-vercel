@@ -1,7 +1,10 @@
 import Card from "@/components/card/Card";
-import shops from "@/shops.json";
-export default function Home() {
+import { getShops } from "@/lib/shops";
 
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const shops = await getShops();
   return (
     <>
       <h1>Read shops review for help your decition</h1>
